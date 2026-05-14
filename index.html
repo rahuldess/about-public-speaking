@@ -739,6 +739,17 @@
       border-color: #b8ccdf;
     }
 
+    /* Submit error banner */
+    .submit-error {
+      display: none; align-items: flex-start; gap: 0.6rem;
+      background: #fff5f5; border: 1.5px solid #feb2b2;
+      border-left: 4px solid #d93025;
+      border-radius: 10px; padding: 0.85rem 1rem;
+      font-size: 0.88rem; color: #c0392b; font-weight: 600;
+      line-height: 1.5; margin-top: 1rem;
+    }
+    .submit-error.show { display: flex; }
+
     /* Submit + success */
     .modal-submit {
       width: 100%; height: 56px; border: none; cursor: pointer;
@@ -1136,6 +1147,10 @@
         </div>
 
         <input type="hidden" id="f-program" value="Public Speaking" />
+        <div class="submit-error" id="submitError">
+          <span>⚠️</span>
+          <span>Something went wrong on our end. Please try again, or call us directly at the number below.</span>
+        </div>
         <button type="submit" class="modal-submit" id="modalSubmit">
           <span id="submitLabel">Reserve My Spot →</span>
         </button>
@@ -1178,23 +1193,123 @@
   })();
 </script>
 
+<!-- ── ANALYTICS HELPER ── -->
+<script>
+window.track = function (name, data) {
+  try {
+    if (window.va) window.va('event', data ? { name: name, data: data } : { name: name });
+  } catch (e) {}
+};
+</script>
+
+<!-- ── TRAFFIC SOURCE DETECTION ── -->
 <script>
 (function () {
-  var btn      = document.getElementById('callBtn');
-  var popover  = document.getElementById('callPopover');
-  btn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    popover.classList.toggle('open');
-  });
-  document.addEventListener('click', function () {
-    popover.classList.remove('open');
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') popover.classList.remove('open');
-  });
+  var known = ['whatsapp','instagram','facebook','tiktok','email','sms','google','flyer'];
+  var params = new URLSearchParams(window.location.search);
+
+  // Support ?utm_source=whatsapp  OR  ?whatsapp  (boolean-style)
+  var source = params.get('utm_source');
+  if (!source) {
+    for (var i = 0; i < known.length; i++) {
+      if (params.has(known[i])) { source = known[i]; break; }
+    }
+  }
+
+  if (source) {
+    source = source.toLowerCase().trim();
+    sessionStorage.setItem('traffic_source', source);
+    window.track('Traffic Source', { source: source });
+  }
 })();
 </script>
 
+<!-- ── CALL POPOVER ── -->
+<script>
+(function () {
+  var btn     = document.getElementById('callBtn');
+  var popover = document.getElementById('callPopover');
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    popover.classList.toggle('open');
+    if (popover.classList.contains('open')) window.track('Call Popover Opened');
+  });
+  document.querySelectorAll('.call-option').forEach(function (el) {
+    el.addEventListener('click', function () {
+      window.track('Location Called', { location: el.querySelector('.call-loc').textContent.trim() });
+    });
+  });
+  document.addEventListener('click', function () { popover.classList.remove('open'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') popover.classList.remove('open'); });
+})();
+</script>
+
+<!-- ── PAGE JOURNEY ANALYTICS ── -->
+<script>
+(function () {
+
+  // Scroll depth — fires once each at 25 / 50 / 75 / 100 %
+  var ticked = {}, raf;
+  window.addEventListener('scroll', function () {
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = null;
+      var pct = Math.min(100, Math.round(
+        (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100
+      ));
+      [25, 50, 75, 100].forEach(function (m) {
+        if (pct >= m && !ticked[m]) {
+          ticked[m] = true;
+          window.track('Scroll Depth', { depth: m + '%' });
+        }
+      });
+    });
+  }, { passive: true });
+
+  // Section visibility — fires once per section when 20 % is in view
+  if ('IntersectionObserver' in window) {
+    ['benefits', 'highlights', 'locations'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var obs = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) {
+          window.track('Section Viewed', { section: id });
+          obs.disconnect();
+        }
+      }, { threshold: 0.2 });
+      obs.observe(el);
+    });
+  }
+
+  // "Why public speaking?" ghost button
+  document.querySelectorAll('a[href="#benefits"]').forEach(function (el) {
+    el.addEventListener('click', function () { window.track('Why Public Speaking Clicked'); });
+  });
+
+  // "Register at a Location ↓" scroll CTA
+  document.querySelectorAll('a[href="#locations"]').forEach(function (el) {
+    el.addEventListener('click', function () { window.track('Scroll To Locations Clicked'); });
+  });
+
+  // Instagram follow button
+  var instaBtn = document.querySelector('.insta-follow-btn');
+  if (instaBtn) instaBtn.addEventListener('click', function () { window.track('Instagram Follow Clicked'); });
+
+  // Footer social + map links
+  document.querySelectorAll('.soc-btn').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var card = el.closest('.loc-card');
+      var loc  = card ? card.querySelector('.loc-name').textContent.replace('📍', '').trim() : 'unknown';
+      var plat = el.classList.contains('soc-fb') ? 'Facebook'
+               : el.classList.contains('soc-ig') ? 'Instagram' : 'Map';
+      window.track('Social Link Clicked', { location: loc, platform: plat });
+    });
+  });
+
+})();
+</script>
+
+<!-- ── LEAD FORM + MODAL ── -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (function () {
@@ -1206,13 +1321,12 @@
   var form      = document.getElementById('leadForm');
   var success   = document.getElementById('modalSuccess');
   var childCont = document.getElementById('childrenContainer');
+  var submitted = false;
 
+  // ── Child rows ──
   var GRADES = ['Grade 2','Grade 3','Grade 4','Grade 5','Grade 6','Grade 7'];
-
   function gradeOpts() {
-    return GRADES.map(function (g) {
-      return '<option value="' + g + '">' + g + '</option>';
-    }).join('');
+    return GRADES.map(function (g) { return '<option value="'+g+'">'+g+'</option>'; }).join('');
   }
 
   function makeChildRow() {
@@ -1224,29 +1338,18 @@
         '<button type="button" class="child-remove" aria-label="Remove child">×</button>' +
       '</div>' +
       '<div class="child-fields">' +
-        '<div class="form-group">' +
-          '<label>Child\'s Name</label>' +
+        '<div class="form-group"><label>Child\'s Name</label>' +
           '<input type="text" data-child="name" placeholder="First name" />' +
-          '<span class="err-msg">Please enter name.</span>' +
-        '</div>' +
-        '<div class="form-group">' +
-          '<label>Grade</label>' +
-          '<select data-child="grade">' +
-            '<option value="">Grade…</option>' +
-            gradeOpts() +
-          '</select>' +
-          '<span class="err-msg">Please select grade.</span>' +
-        '</div>' +
-        '<div class="form-group">' +
-          '<label>Age</label>' +
+          '<span class="err-msg">Please enter name.</span></div>' +
+        '<div class="form-group"><label>Grade</label>' +
+          '<select data-child="grade"><option value="">Grade…</option>' + gradeOpts() + '</select>' +
+          '<span class="err-msg">Please select grade.</span></div>' +
+        '<div class="form-group"><label>Age</label>' +
           '<input type="number" data-child="age" placeholder="8" min="4" max="16" />' +
-          '<span class="err-msg">Please enter age.</span>' +
-        '</div>' +
+          '<span class="err-msg">Please enter age.</span></div>' +
       '</div>';
-
     row.querySelector('.child-remove').addEventListener('click', function () {
-      row.remove();
-      refreshChildren();
+      row.remove(); refreshChildren();
     });
     return row;
   }
@@ -1259,15 +1362,24 @@
     });
   }
 
-  function addChild() {
-    childCont.appendChild(makeChildRow());
-    refreshChildren();
-  }
+  function addChild() { childCont.appendChild(makeChildRow()); refreshChildren(); }
 
-  document.getElementById('addChildBtn').addEventListener('click', addChild);
+  document.getElementById('addChildBtn').addEventListener('click', function () {
+    addChild();
+    window.track('Child Added', { total: String(childCont.querySelectorAll('.child-row').length) });
+  });
 
   // ── Open / close ──
-  function openModal(program, location) {
+  function getSource(el) {
+    if (el.closest('nav'))        return 'nav';
+    if (el.closest('.hero-card')) return 'hero_card';
+    if (el.dataset.location)      return 'location_' + el.dataset.location.toLowerCase().replace(/\s+/g, '_');
+    if (el.closest('.hero'))      return 'hero';
+    return 'unknown';
+  }
+
+  function openModal(program, location, source) {
+    submitted = false;
     childCont.innerHTML = '';
     addChild();
 
@@ -1277,13 +1389,25 @@
 
     form.style.display = '';
     success.classList.remove('show');
+    document.getElementById('submitError').classList.remove('show');
     clearErrors();
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
     setTimeout(function () { document.getElementById('f-parent-name').focus(); }, 80);
+
+    window.track('Register Modal Opened', {
+      program:  program  || 'Public Speaking',
+      location: location || 'not_selected',
+      source:   source   || 'unknown',
+    });
   }
 
   function closeModal() {
+    if (overlay.classList.contains('open') && !submitted) {
+      window.track('Modal Abandoned', {
+        location: document.getElementById('f-location').value || 'not_selected',
+      });
+    }
     overlay.classList.remove('open');
     document.body.style.overflow = '';
   }
@@ -1291,43 +1415,45 @@
   document.querySelectorAll('[data-register]').forEach(function (el) {
     el.addEventListener('click', function (e) {
       e.preventDefault();
-      openModal(el.dataset.program, el.dataset.location);
+      openModal(el.dataset.program, el.dataset.location, getSource(el));
     });
   });
 
   document.getElementById('modalClose').addEventListener('click', closeModal);
-  document.getElementById('modalDone').addEventListener('click', closeModal);
+  document.getElementById('modalDone').addEventListener('click', function () {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  });
   overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
 
   // ── Validation ──
   function clearErrors() {
-    document.querySelectorAll('.form-group.has-error').forEach(function (g) {
-      g.classList.remove('has-error');
-    });
+    document.querySelectorAll('.form-group.has-error').forEach(function (g) { g.classList.remove('has-error'); });
   }
-
   function setError(id) { document.getElementById(id).classList.add('has-error'); }
 
   function validate() {
     clearErrors();
-    var ok = true;
+    var ok = true, failed = [];
 
-    if (!document.getElementById('f-parent-name').value.trim()) { setError('fg-parent-name'); ok = false; }
-    if (!document.getElementById('f-phone').value.trim())        { setError('fg-phone');       ok = false; }
+    if (!document.getElementById('f-parent-name').value.trim()) { setError('fg-parent-name'); failed.push('name');     ok = false; }
+    if (!document.getElementById('f-phone').value.trim())        { setError('fg-phone');       failed.push('phone');    ok = false; }
     var email = document.getElementById('f-email').value.trim();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))    { setError('fg-email');       ok = false; }
-    if (!document.getElementById('f-location').value)            { setError('fg-location');    ok = false; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))    { setError('fg-email');       failed.push('email');    ok = false; }
+    if (!document.getElementById('f-location').value)            { setError('fg-location');    failed.push('location'); ok = false; }
 
-    childCont.querySelectorAll('.child-row').forEach(function (row) {
+    childCont.querySelectorAll('.child-row').forEach(function (row, i) {
       var nEl = row.querySelector('[data-child="name"]');
       var gEl = row.querySelector('[data-child="grade"]');
       var aEl = row.querySelector('[data-child="age"]');
-      if (!nEl.value.trim()) { nEl.closest('.form-group').classList.add('has-error'); ok = false; }
-      if (!gEl.value)        { gEl.closest('.form-group').classList.add('has-error'); ok = false; }
-      if (!aEl.value.trim()) { aEl.closest('.form-group').classList.add('has-error'); ok = false; }
+      var p   = 'child' + (i + 1) + '_';
+      if (!nEl.value.trim()) { nEl.closest('.form-group').classList.add('has-error'); failed.push(p + 'name');  ok = false; }
+      if (!gEl.value)        { gEl.closest('.form-group').classList.add('has-error'); failed.push(p + 'grade'); ok = false; }
+      if (!aEl.value.trim()) { aEl.closest('.form-group').classList.add('has-error'); failed.push(p + 'age');   ok = false; }
     });
 
+    if (!ok) window.track('Form Validation Error', { fields: failed.join(',') });
     return ok;
   }
 
@@ -1350,14 +1476,19 @@
       });
     });
 
+    var _params = new URLSearchParams(window.location.search);
     var payload = {
-      name:     document.getElementById('f-parent-name').value.trim(),
-      email:    document.getElementById('f-email').value.trim(),
-      phone:    document.getElementById('f-phone').value.trim(),
-      location: document.getElementById('f-location').value,
-      program:  document.getElementById('f-program').value,
-      children: children,
-      page_url: window.location.href,
+      name:           document.getElementById('f-parent-name').value.trim(),
+      email:          document.getElementById('f-email').value.trim(),
+      phone:          document.getElementById('f-phone').value.trim(),
+      location:       document.getElementById('f-location').value,
+      program:        document.getElementById('f-program').value,
+      children:       children,
+      page_url:       window.location.href,
+      traffic_source: sessionStorage.getItem('traffic_source') || 'direct',
+      referrer:       document.referrer || null,
+      utm_medium:     _params.get('utm_medium') || null,
+      utm_campaign:   _params.get('utm_campaign') || null,
     };
 
     var { error } = await sb.from('program_leads').insert(payload);
@@ -1366,15 +1497,22 @@
     label.textContent = 'Reserve My Spot →';
 
     if (error) {
-      alert('Something went wrong. Please try again or call us directly.');
-      console.error(error);
+      document.getElementById('submitError').classList.add('show');
+      window.track('Lead Submit Failed', { location: payload.location });
+      console.error('[lead submit]', error.message);
       return;
     }
+    document.getElementById('submitError').classList.remove('show');
 
-    var childNames = children.map(function (c) { return c.name; });
-    var nameStr = childNames.length === 1
-      ? childNames[0] + '\'s spot'
-      : 'your children\'s spots';
+    submitted = true;
+    window.track('Lead Submitted', {
+      program:        payload.program,
+      location:       payload.location,
+      child_count:    String(children.length),
+      traffic_source: sessionStorage.getItem('traffic_source') || 'direct',
+    });
+
+    var nameStr = children.length === 1 ? children[0].name + '\'s spot' : 'your children\'s spots';
     document.getElementById('successMsg').textContent =
       'Thanks! Someone from Best Brains ' + payload.location +
       ' will reach out within 24 hours to confirm ' + nameStr + '.';
