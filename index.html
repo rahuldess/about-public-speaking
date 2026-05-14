@@ -558,6 +558,143 @@
     .footer-bottom a { color: rgba(255,255,255,0.5); font-size: 0.8rem; text-decoration: none; font-weight: 600; }
     .footer-bottom a:hover { color: var(--yellow); }
 
+    /* ── LEAD MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(6,14,34,0.65); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--white); border-radius: 24px;
+      width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(6,14,34,0.3);
+      animation: modal-in 0.22s ease;
+    }
+    @keyframes modal-in { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-head {
+      background: linear-gradient(135deg, var(--blue-deep), var(--blue-dark));
+      border-radius: 24px 24px 0 0;
+      padding: 1.8rem 2rem 1.6rem;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem;
+      background: rgba(255,255,255,0.15); border: none; cursor: pointer;
+      width: 36px; height: 36px; border-radius: 50%;
+      color: #fff; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.28); }
+    .modal-badge {
+      display: inline-block;
+      font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--yellow); background: rgba(255,194,51,0.15);
+      padding: 0.3rem 0.8rem; border-radius: 999px; margin-bottom: 0.65rem;
+    }
+    .modal-head h3 {
+      font-family: 'Nunito', sans-serif; font-weight: 900;
+      font-size: 1.55rem; color: #fff; line-height: 1.15; letter-spacing: -0.02em;
+    }
+    .modal-head p { font-size: 0.88rem; color: rgba(255,255,255,0.75); margin-top: 0.4rem; font-weight: 500; }
+    .modal-body { padding: 1.8rem 2rem 2rem; }
+    .form-row { display: grid; gap: 1rem; margin-bottom: 1rem; }
+    .form-row.two-col { grid-template-columns: 1fr 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group label {
+      font-family: 'Nunito', sans-serif; font-size: 0.8rem;
+      font-weight: 800; color: var(--dark); letter-spacing: 0.04em;
+    }
+    .form-group input, .form-group select {
+      height: 46px; padding: 0 0.95rem;
+      border: 2px solid var(--border); border-radius: 10px;
+      font-family: 'Open Sans', sans-serif; font-size: 0.93rem; color: var(--dark);
+      background: var(--paper); transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none; width: 100%; appearance: none;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--blue); box-shadow: 0 0 0 3px rgba(31,91,173,0.12); background: #fff;
+    }
+    .form-group .err-msg { font-size: 0.75rem; color: #e53e3e; font-weight: 600; display: none; }
+    .form-group.has-error .err-msg { display: block; }
+    .form-group.has-error input, .form-group.has-error select { border-color: #e53e3e; }
+    .modal-submit {
+      width: 100%; height: 52px; border: none; cursor: pointer;
+      background: var(--yellow); color: var(--blue-dark);
+      font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.05rem;
+      border-radius: 12px; box-shadow: 0 6px 20px rgba(255,194,51,0.4);
+      transition: transform 0.15s, box-shadow 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      margin-top: 1.2rem;
+    }
+    .modal-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255,194,51,0.5); }
+    .modal-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .modal-note { font-size: 0.75rem; color: var(--gray-lt); text-align: center; margin-top: 0.8rem; line-height: 1.5; }
+    .modal-success {
+      display: none; flex-direction: column; align-items: center;
+      padding: 3rem 2rem; text-align: center; gap: 1rem;
+    }
+    .modal-success.show { display: flex; }
+    .success-icon {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--green); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 2rem;
+    }
+    .modal-success h3 { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--dark); }
+    .modal-success p { font-size: 0.93rem; color: var(--gray); max-width: 320px; line-height: 1.6; }
+    .modal-success .done-btn {
+      margin-top: 0.5rem; padding: 0.85rem 2rem;
+      background: var(--blue); color: #fff; border: none; cursor: pointer;
+      border-radius: 999px; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem;
+    }
+    .form-section-label {
+      font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 900;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue);
+      margin-bottom: 0.7rem;
+    }
+    .children-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.65rem;
+    }
+    .add-child-btn {
+      font-family: 'Nunito', sans-serif; font-size: 0.8rem; font-weight: 900;
+      color: var(--blue); background: var(--blue-lt);
+      border: 1.5px solid var(--blue-mid); border-radius: 999px;
+      padding: 0.3rem 0.85rem; cursor: pointer; transition: background 0.15s;
+    }
+    .add-child-btn:hover { background: var(--blue-mid); }
+    .child-row {
+      background: var(--paper); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 0.9rem 1rem; margin-bottom: 0.7rem;
+    }
+    .child-row-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.65rem;
+    }
+    .child-label {
+      font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 900;
+      color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .child-remove {
+      background: none; border: none; cursor: pointer;
+      width: 26px; height: 26px; border-radius: 6px;
+      color: var(--gray-lt); font-size: 1rem; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.15s, background 0.15s;
+    }
+    .child-remove:hover { color: #e53e3e; background: rgba(229,62,62,0.1); }
+    .child-fields { display: grid; grid-template-columns: 1.4fr 1fr 0.65fr; gap: 0.6rem; }
+
+    @media (max-width: 520px) {
+      .modal-box { border-radius: 20px; }
+      .modal-head { padding: 1.5rem 1.4rem 1.3rem; border-radius: 20px 20px 0 0; }
+      .modal-body { padding: 1.4rem 1.4rem 1.6rem; }
+      .form-row.two-col { grid-template-columns: 1fr; }
+      .child-fields { grid-template-columns: 1fr 1fr; }
+      .child-fields .form-group:first-child { grid-column: 1 / -1; }
+    }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 1024px) {
       .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
@@ -640,7 +777,7 @@
     <li><a href="#benefits">Benefits</a></li>
     <li><a href="#highlights">Highlights</a></li>
     <li><a href="#locations">Locations</a></li>
-    <li><a href="#register" class="nav-cta">Register Now</a></li>
+    <li><a href="#register" class="nav-cta" data-register data-program="Public Speaking">Register Now</a></li>
   </ul>
 </nav>
 
@@ -664,7 +801,7 @@
         Small groups, certified teachers, and a live showcase at the end — your child will never sound the same again.
       </p>
       <div class="hero-cta-row">
-        <a href="#register" class="btn btn-primary">Register for the 8-Week Course →</a>
+        <a href="#register" class="btn btn-primary" data-register data-program="Public Speaking">Register for the 8-Week Course →</a>
         <a href="#benefits" class="btn btn-ghost">Why public speaking?</a>
       </div>
       <div class="hero-meta">
@@ -694,7 +831,7 @@
           <div class="hero-price-amt">$259</div>
           <div class="hero-price-lbl">all 8 weeks · 90 min/session</div>
         </div>
-        <a href="#register" class="btn btn-orange" style="padding: 0.7rem 1.2rem; font-size: 0.88rem;">Reserve a Seat</a>
+        <a href="#register" class="btn btn-orange" style="padding: 0.7rem 1.2rem; font-size: 0.88rem;" data-register data-program="Public Speaking">Reserve a Seat</a>
       </div>
     </aside>
   </div>
@@ -804,7 +941,7 @@
       </div>
       <iframe class="map-embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Best Brains Fleetwood"
         src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d10437.12773579469!2d-122.7771558!3d49.1572566!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5485d10e231b1a6f%3A0x99120f92f48d8965!2sBest%20Brains%20Learning%20Center%20-%20Surrey%20Fleetwood!5e0!3m2!1sen!2sin!4v1754319121564!5m2!1sen!2sin" allowfullscreen></iframe>
-      <a href="https://bestbrains.com/ca-en/surrey-fleetwood/new-registration" target="_blank" rel="noopener" class="loc-reg">Register at Fleetwood →</a>
+      <a href="https://bestbrains.com/ca-en/surrey-fleetwood/new-registration" class="loc-reg" data-register data-program="Public Speaking" data-location="Fleetwood">Register at Fleetwood →</a>
     </div>
 
     <div class="loc-card">
@@ -825,7 +962,7 @@
       </div>
       <iframe class="map-embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Best Brains Clayton"
         src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d10443.581661590857!2d-122.7013151!3d49.1266214!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5485d18ca6c564c7%3A0x9fd3eacab2882b4a!2sBest%20Brains%20Learning%20Center%20-%20Surrey%20Clayton!5e0!3m2!1sen!2sin!4v1754318970834!5m2!1sen!2sin" allowfullscreen></iframe>
-      <a href="https://bestbrains.com/ca-en/surrey-clayton/new-registration" target="_blank" rel="noopener" class="loc-reg">Register at Clayton →</a>
+      <a href="https://bestbrains.com/ca-en/surrey-clayton/new-registration" class="loc-reg" data-register data-program="Public Speaking" data-location="Clayton">Register at Clayton →</a>
     </div>
 
     <div class="loc-card">
@@ -846,7 +983,7 @@
       </div>
       <iframe class="map-embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Best Brains City Centre"
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2606.2786048985555!2d-122.84869802315836!3d49.18805337107786!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5485d9b9b8f28b0b%3A0x4e9f5fcfd49c8b8e!2s10070%20King%20George%20Blvd%20%23210%2C%20Surrey%2C%20BC%20V3T%202W4!5e0!3m2!1sen!2sca!4v1700000000000!5m2!1sen!2sca" allowfullscreen></iframe>
-      <a href="https://bestbrains.com/ca-en/surrey-citycentre/new-registration" target="_blank" rel="noopener" class="loc-reg">Register at City Centre →</a>
+      <a href="https://bestbrains.com/ca-en/surrey-citycentre/new-registration" class="loc-reg" data-register data-program="Public Speaking" data-location="City Centre">Register at City Centre →</a>
     </div>
 
   </div>
@@ -859,6 +996,74 @@
   </div>
   <p>© 2026 Best Brains Learning Centers. All rights reserved. Surrey, BC, Canada.</p>
   <a href="https://bestbrains.com/ca-en/privacy" target="_blank" rel="noopener">Privacy Policy</a>
+</div>
+
+<!-- ── LEAD CAPTURE MODAL ── -->
+<div class="modal-overlay" id="leadModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      <div class="modal-badge" id="modalBadge">Public Speaking · 8-Week Course</div>
+      <h3 id="modalTitle">Reserve your child's spot</h3>
+      <p>We'll follow up within 24 hours to confirm your registration.</p>
+    </div>
+    <div class="modal-body">
+      <form id="leadForm" novalidate>
+
+        <div class="form-section-label">Parent / Guardian</div>
+        <div class="form-row two-col">
+          <div class="form-group" id="fg-parent-name">
+            <label for="f-parent-name">Full Name</label>
+            <input type="text" id="f-parent-name" placeholder="Your name" autocomplete="name" />
+            <span class="err-msg">Please enter your name.</span>
+          </div>
+          <div class="form-group" id="fg-phone">
+            <label for="f-phone">Phone Number</label>
+            <input type="tel" id="f-phone" placeholder="(778) 000-0000" autocomplete="tel" />
+            <span class="err-msg">Please enter a phone number.</span>
+          </div>
+        </div>
+        <div class="form-row" style="margin-bottom:1.2rem">
+          <div class="form-group" id="fg-email">
+            <label for="f-email">Email Address</label>
+            <input type="email" id="f-email" placeholder="you@example.com" autocomplete="email" />
+            <span class="err-msg">Please enter a valid email.</span>
+          </div>
+        </div>
+
+        <div class="children-header">
+          <div class="form-section-label" style="margin-bottom:0">Child(ren)</div>
+          <button type="button" class="add-child-btn" id="addChildBtn">+ Add Child</button>
+        </div>
+        <div id="childrenContainer"></div>
+
+        <div class="form-row" style="margin-top:0.4rem">
+          <div class="form-group" id="fg-location">
+            <label for="f-location">Preferred Location</label>
+            <select id="f-location">
+              <option value="">Select location…</option>
+              <option value="Fleetwood">Fleetwood</option>
+              <option value="Clayton">Clayton</option>
+              <option value="City Centre">City Centre</option>
+            </select>
+            <span class="err-msg">Please select a location.</span>
+          </div>
+        </div>
+
+        <input type="hidden" id="f-program" value="Public Speaking" />
+        <button type="submit" class="modal-submit" id="modalSubmit">
+          <span id="submitLabel">Reserve My Spot →</span>
+        </button>
+        <p class="modal-note">🔒 Your info is private and will never be shared.</p>
+      </form>
+    </div>
+    <div class="modal-success" id="modalSuccess">
+      <div class="success-icon">✓</div>
+      <h3>You're on the list!</h3>
+      <p id="successMsg">We'll reach out within 24 hours to confirm your spot.</p>
+      <button class="done-btn" id="modalDone">Done</button>
+    </div>
+  </div>
 </div>
 
 </body>
@@ -886,5 +1091,196 @@
       }
     });
   })();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(function () {
+  var SUPA_URL  = 'https://orxzznhnuofefquyzkci.supabase.co';
+  var SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yeHp6bmhudW9mZWZxdXl6a2NpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyNzgzMjgsImV4cCI6MjA3Mjg1NDMyOH0.e4diWXR55ksvB9vz9rO0FtisYVn0S87QLZvfNO2t6qU';
+  var sb = window.supabase.createClient(SUPA_URL, SUPA_ANON);
+
+  var overlay   = document.getElementById('leadModal');
+  var form      = document.getElementById('leadForm');
+  var success   = document.getElementById('modalSuccess');
+  var childCont = document.getElementById('childrenContainer');
+
+  var GRADES = ['Grade 2','Grade 3','Grade 4','Grade 5','Grade 6','Grade 7'];
+
+  function gradeOpts() {
+    return GRADES.map(function (g) {
+      return '<option value="' + g + '">' + g + '</option>';
+    }).join('');
+  }
+
+  function makeChildRow() {
+    var row = document.createElement('div');
+    row.className = 'child-row';
+    row.innerHTML =
+      '<div class="child-row-header">' +
+        '<span class="child-label"></span>' +
+        '<button type="button" class="child-remove" aria-label="Remove child">×</button>' +
+      '</div>' +
+      '<div class="child-fields">' +
+        '<div class="form-group">' +
+          '<label>Child\'s Name</label>' +
+          '<input type="text" data-child="name" placeholder="First name" />' +
+          '<span class="err-msg">Please enter name.</span>' +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label>Grade</label>' +
+          '<select data-child="grade">' +
+            '<option value="">Grade…</option>' +
+            gradeOpts() +
+          '</select>' +
+          '<span class="err-msg">Please select grade.</span>' +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label>Age</label>' +
+          '<input type="number" data-child="age" placeholder="8" min="4" max="16" />' +
+          '<span class="err-msg">Please enter age.</span>' +
+        '</div>' +
+      '</div>';
+
+    row.querySelector('.child-remove').addEventListener('click', function () {
+      row.remove();
+      refreshChildren();
+    });
+    return row;
+  }
+
+  function refreshChildren() {
+    var rows = childCont.querySelectorAll('.child-row');
+    rows.forEach(function (r, i) {
+      r.querySelector('.child-label').textContent = 'Child ' + (i + 1);
+      r.querySelector('.child-remove').style.visibility = rows.length > 1 ? 'visible' : 'hidden';
+    });
+  }
+
+  function addChild() {
+    childCont.appendChild(makeChildRow());
+    refreshChildren();
+  }
+
+  document.getElementById('addChildBtn').addEventListener('click', addChild);
+
+  // ── Open / close ──
+  function openModal(program, location) {
+    childCont.innerHTML = '';
+    addChild();
+
+    document.getElementById('f-program').value = program || 'Public Speaking';
+    document.getElementById('modalBadge').textContent = (program || 'Public Speaking') + ' · 8-Week Course';
+    document.getElementById('f-location').value = location || '';
+
+    form.style.display = '';
+    success.classList.remove('show');
+    clearErrors();
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(function () { document.getElementById('f-parent-name').focus(); }, 80);
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('[data-register]').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      openModal(el.dataset.program, el.dataset.location);
+    });
+  });
+
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalDone').addEventListener('click', closeModal);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+  // ── Validation ──
+  function clearErrors() {
+    document.querySelectorAll('.form-group.has-error').forEach(function (g) {
+      g.classList.remove('has-error');
+    });
+  }
+
+  function setError(id) { document.getElementById(id).classList.add('has-error'); }
+
+  function validate() {
+    clearErrors();
+    var ok = true;
+
+    if (!document.getElementById('f-parent-name').value.trim()) { setError('fg-parent-name'); ok = false; }
+    if (!document.getElementById('f-phone').value.trim())        { setError('fg-phone');       ok = false; }
+    var email = document.getElementById('f-email').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))    { setError('fg-email');       ok = false; }
+    if (!document.getElementById('f-location').value)            { setError('fg-location');    ok = false; }
+
+    childCont.querySelectorAll('.child-row').forEach(function (row) {
+      var nEl = row.querySelector('[data-child="name"]');
+      var gEl = row.querySelector('[data-child="grade"]');
+      var aEl = row.querySelector('[data-child="age"]');
+      if (!nEl.value.trim()) { nEl.closest('.form-group').classList.add('has-error'); ok = false; }
+      if (!gEl.value)        { gEl.closest('.form-group').classList.add('has-error'); ok = false; }
+      if (!aEl.value.trim()) { aEl.closest('.form-group').classList.add('has-error'); ok = false; }
+    });
+
+    return ok;
+  }
+
+  // ── Submit ──
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (!validate()) return;
+
+    var btn   = document.getElementById('modalSubmit');
+    var label = document.getElementById('submitLabel');
+    btn.disabled = true;
+    label.textContent = 'Submitting…';
+
+    var children = [];
+    childCont.querySelectorAll('.child-row').forEach(function (row) {
+      children.push({
+        name:  row.querySelector('[data-child="name"]').value.trim(),
+        grade: row.querySelector('[data-child="grade"]').value,
+        age:   row.querySelector('[data-child="age"]').value.trim(),
+      });
+    });
+
+    var payload = {
+      name:     document.getElementById('f-parent-name').value.trim(),
+      email:    document.getElementById('f-email').value.trim(),
+      phone:    document.getElementById('f-phone').value.trim(),
+      location: document.getElementById('f-location').value,
+      program:  document.getElementById('f-program').value,
+      children: children,
+      page_url: window.location.href,
+    };
+
+    var { error } = await sb.from('program_leads').insert(payload);
+
+    btn.disabled = false;
+    label.textContent = 'Reserve My Spot →';
+
+    if (error) {
+      alert('Something went wrong. Please try again or call us directly.');
+      console.error(error);
+      return;
+    }
+
+    var childNames = children.map(function (c) { return c.name; });
+    var nameStr = childNames.length === 1
+      ? childNames[0] + '\'s spot'
+      : 'your children\'s spots';
+    document.getElementById('successMsg').textContent =
+      'Thanks! Someone from Best Brains ' + payload.location +
+      ' will reach out within 24 hours to confirm ' + nameStr + '.';
+
+    form.style.display = 'none';
+    success.classList.add('show');
+    form.reset();
+  });
+})();
 </script>
 </html>
