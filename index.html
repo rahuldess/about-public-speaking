@@ -450,6 +450,28 @@
     .cta-band .btn-primary:hover { background: var(--orange); }
     .cta-band .btn-ghost { color: var(--blue-dark); border-color: rgba(15,42,92,0.3); }
     .cta-band .btn-ghost:hover { background: rgba(15,42,92,0.06); border-color: var(--blue-dark); }
+    .call-wrap { position: relative; }
+    .call-popover {
+      display: none; position: absolute; bottom: calc(100% + 0.6rem); left: 50%;
+      transform: translateX(-50%);
+      background: #fff; border: 2px solid var(--border); border-radius: 16px;
+      padding: 0.4rem; min-width: 230px; z-index: 200;
+      box-shadow: 0 8px 32px rgba(6,14,34,0.16);
+    }
+    .call-popover.open { display: block; }
+    .call-popover-title {
+      font-family: 'Nunito', sans-serif; font-size: 0.68rem; font-weight: 900;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-lt);
+      padding: 0.45rem 0.75rem 0.3rem;
+    }
+    .call-option {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.65rem 0.75rem; border-radius: 10px;
+      text-decoration: none; transition: background 0.15s; gap: 1rem;
+    }
+    .call-option:hover { background: var(--blue-lt); }
+    .call-loc { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.9rem; color: var(--dark); }
+    .call-num { font-size: 0.85rem; color: var(--blue); font-weight: 700; white-space: nowrap; }
 
     /* ── INSTAGRAM ── */
     .insta-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
@@ -561,138 +583,185 @@
     /* ── LEAD MODAL ── */
     .modal-overlay {
       display: none; position: fixed; inset: 0; z-index: 1000;
-      background: rgba(6,14,34,0.65); backdrop-filter: blur(4px);
-      align-items: center; justify-content: center; padding: 1rem;
+      background: rgba(6,14,34,0.7); backdrop-filter: blur(5px);
+      align-items: flex-end; justify-content: center;
+      padding: 0;
     }
     .modal-overlay.open { display: flex; }
     .modal-box {
-      background: var(--white); border-radius: 24px;
-      width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
-      box-shadow: 0 24px 64px rgba(6,14,34,0.3);
-      animation: modal-in 0.22s ease;
+      background: var(--white);
+      border-radius: 24px 24px 0 0;
+      width: 100%; max-width: 100%;
+      max-height: 92vh; overflow-y: auto;
+      box-shadow: 0 -8px 48px rgba(6,14,34,0.28);
+      animation: modal-up 0.28s cubic-bezier(0.32,0.72,0,1);
     }
-    @keyframes modal-in { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes modal-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    /* On larger screens, show as a centred dialog */
+    @media (min-width: 600px) {
+      .modal-overlay { align-items: center; padding: 1rem; }
+      .modal-box {
+        border-radius: 24px; max-width: 500px;
+        animation: modal-in 0.22s ease;
+      }
+      @keyframes modal-in { from { transform: translateY(18px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+    }
+
     .modal-head {
       background: linear-gradient(135deg, var(--blue-deep), var(--blue-dark));
       border-radius: 24px 24px 0 0;
-      padding: 1.8rem 2rem 1.6rem;
+      padding: 1.5rem 1.4rem 1.4rem;
       position: relative;
     }
+    @media (min-width: 600px) {
+      .modal-head { padding: 1.8rem 1.8rem 1.6rem; }
+    }
+    .modal-drag-bar {
+      width: 40px; height: 4px; background: rgba(255,255,255,0.3);
+      border-radius: 2px; margin: 0 auto 1.1rem;
+    }
+    @media (min-width: 600px) { .modal-drag-bar { display: none; } }
     .modal-close {
       position: absolute; top: 1rem; right: 1rem;
       background: rgba(255,255,255,0.15); border: none; cursor: pointer;
-      width: 36px; height: 36px; border-radius: 50%;
-      color: #fff; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 50%;
+      color: #fff; font-size: 1rem; display: flex; align-items: center; justify-content: center;
       transition: background 0.15s;
     }
     .modal-close:hover { background: rgba(255,255,255,0.28); }
     .modal-badge {
       display: inline-block;
-      font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 800;
+      font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 800;
       letter-spacing: 0.14em; text-transform: uppercase;
       color: var(--yellow); background: rgba(255,194,51,0.15);
-      padding: 0.3rem 0.8rem; border-radius: 999px; margin-bottom: 0.65rem;
+      padding: 0.28rem 0.75rem; border-radius: 999px; margin-bottom: 0.6rem;
     }
     .modal-head h3 {
       font-family: 'Nunito', sans-serif; font-weight: 900;
-      font-size: 1.55rem; color: #fff; line-height: 1.15; letter-spacing: -0.02em;
+      font-size: 1.45rem; color: #fff; line-height: 1.15; letter-spacing: -0.02em;
     }
-    .modal-head p { font-size: 0.88rem; color: rgba(255,255,255,0.75); margin-top: 0.4rem; font-weight: 500; }
-    .modal-body { padding: 1.8rem 2rem 2rem; }
-    .form-row { display: grid; gap: 1rem; margin-bottom: 1rem; }
+    @media (min-width: 600px) { .modal-head h3 { font-size: 1.6rem; } }
+    .modal-head p { font-size: 0.85rem; color: rgba(255,255,255,0.72); margin-top: 0.35rem; font-weight: 500; }
+
+    .modal-body { padding: 1.4rem 1.2rem 2rem; }
+    @media (min-width: 600px) { .modal-body { padding: 1.6rem 1.8rem 2rem; } }
+
+    /* Form layout */
+    .form-row { display: grid; gap: 0.75rem; margin-bottom: 0.75rem; }
     .form-row.two-col { grid-template-columns: 1fr 1fr; }
-    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-    .form-group label {
-      font-family: 'Nunito', sans-serif; font-size: 0.8rem;
-      font-weight: 800; color: var(--dark); letter-spacing: 0.04em;
+
+    /* Stack 2-col on narrow screens */
+    @media (max-width: 480px) {
+      .form-row.two-col { grid-template-columns: 1fr; }
     }
-    .form-group input, .form-group select {
-      height: 46px; padding: 0 0.95rem;
-      border: 2px solid var(--border); border-radius: 10px;
-      font-family: 'Open Sans', sans-serif; font-size: 0.93rem; color: var(--dark);
-      background: var(--paper); transition: border-color 0.15s, box-shadow 0.15s;
-      outline: none; width: 100%; appearance: none;
-    }
-    .form-group input:focus, .form-group select:focus {
-      border-color: var(--blue); box-shadow: 0 0 0 3px rgba(31,91,173,0.12); background: #fff;
-    }
-    .form-group .err-msg { font-size: 0.75rem; color: #e53e3e; font-weight: 600; display: none; }
-    .form-group.has-error .err-msg { display: block; }
-    .form-group.has-error input, .form-group.has-error select { border-color: #e53e3e; }
-    .modal-submit {
-      width: 100%; height: 52px; border: none; cursor: pointer;
-      background: var(--yellow); color: var(--blue-dark);
-      font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.05rem;
-      border-radius: 12px; box-shadow: 0 6px 20px rgba(255,194,51,0.4);
-      transition: transform 0.15s, box-shadow 0.2s;
-      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-      margin-top: 1.2rem;
-    }
-    .modal-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255,194,51,0.5); }
-    .modal-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .modal-note { font-size: 0.75rem; color: var(--gray-lt); text-align: center; margin-top: 0.8rem; line-height: 1.5; }
-    .modal-success {
-      display: none; flex-direction: column; align-items: center;
-      padding: 3rem 2rem; text-align: center; gap: 1rem;
-    }
-    .modal-success.show { display: flex; }
-    .success-icon {
-      width: 72px; height: 72px; border-radius: 50%;
-      background: var(--green); color: #fff;
-      display: flex; align-items: center; justify-content: center; font-size: 2rem;
-    }
-    .modal-success h3 { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--dark); }
-    .modal-success p { font-size: 0.93rem; color: var(--gray); max-width: 320px; line-height: 1.6; }
-    .modal-success .done-btn {
-      margin-top: 0.5rem; padding: 0.85rem 2rem;
-      background: var(--blue); color: #fff; border: none; cursor: pointer;
-      border-radius: 999px; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem;
+
+    .form-divider {
+      height: 1px; background: var(--border); margin: 1.2rem 0 1rem;
     }
     .form-section-label {
-      font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 900;
-      letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue);
-      margin-bottom: 0.7rem;
+      font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 900;
+      letter-spacing: 0.16em; text-transform: uppercase; color: var(--blue);
+      margin-bottom: 0.75rem;
     }
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    .form-group label {
+      font-family: 'Nunito', sans-serif; font-size: 0.78rem;
+      font-weight: 800; color: var(--dark); letter-spacing: 0.03em;
+    }
+    .form-group input, .form-group select {
+      height: 50px; padding: 0 1rem;
+      border: 2px solid var(--border); border-radius: 12px;
+      font-family: 'Open Sans', sans-serif; font-size: 0.95rem; color: var(--dark);
+      background: #fff; transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none; width: 100%; appearance: none; -webkit-appearance: none;
+    }
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6478' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 1rem center;
+      padding-right: 2.5rem;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--blue); box-shadow: 0 0 0 3px rgba(31,91,173,0.13); background: #fff;
+    }
+    .form-group input::placeholder { color: var(--gray-lt); }
+    .form-group .err-msg { font-size: 0.74rem; color: #e53e3e; font-weight: 600; display: none; }
+    .form-group.has-error .err-msg { display: block; }
+    .form-group.has-error input, .form-group.has-error select { border-color: #e53e3e; box-shadow: 0 0 0 3px rgba(229,62,62,0.1); }
+
+    /* Children section */
     .children-header {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 0.65rem;
+      margin-bottom: 0.75rem;
     }
     .add-child-btn {
-      font-family: 'Nunito', sans-serif; font-size: 0.8rem; font-weight: 900;
+      font-family: 'Nunito', sans-serif; font-size: 0.82rem; font-weight: 900;
       color: var(--blue); background: var(--blue-lt);
       border: 1.5px solid var(--blue-mid); border-radius: 999px;
-      padding: 0.3rem 0.85rem; cursor: pointer; transition: background 0.15s;
+      padding: 0.38rem 0.9rem; cursor: pointer; transition: background 0.15s;
+      white-space: nowrap;
     }
     .add-child-btn:hover { background: var(--blue-mid); }
     .child-row {
-      background: var(--paper); border: 1.5px solid var(--border);
-      border-radius: 12px; padding: 0.9rem 1rem; margin-bottom: 0.7rem;
+      background: var(--blue-lt);
+      border: 1.5px solid var(--blue-mid);
+      border-left: 4px solid var(--blue);
+      border-radius: 0 12px 12px 0;
+      padding: 0.9rem 1rem 0.85rem 0.9rem;
+      margin-bottom: 0.65rem;
     }
     .child-row-header {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 0.65rem;
+      margin-bottom: 0.7rem;
     }
     .child-label {
-      font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 900;
-      color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase;
+      font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 900;
+      color: var(--blue-deep); letter-spacing: 0.12em; text-transform: uppercase;
     }
     .child-remove {
       background: none; border: none; cursor: pointer;
-      width: 26px; height: 26px; border-radius: 6px;
-      color: var(--gray-lt); font-size: 1rem; line-height: 1;
+      width: 28px; height: 28px; border-radius: 8px;
+      color: var(--gray-lt); font-size: 1.05rem;
       display: flex; align-items: center; justify-content: center;
       transition: color 0.15s, background 0.15s;
     }
     .child-remove:hover { color: #e53e3e; background: rgba(229,62,62,0.1); }
-    .child-fields { display: grid; grid-template-columns: 1.4fr 1fr 0.65fr; gap: 0.6rem; }
+    /* Name always full-width; Grade + Age split 50/50 */
+    .child-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .child-fields .form-group:first-child { grid-column: 1 / -1; }
+    /* Slightly smaller inputs inside child cards */
+    .child-row .form-group input,
+    .child-row .form-group select { height: 46px; font-size: 0.9rem; background: #fff; }
 
-    @media (max-width: 520px) {
-      .modal-box { border-radius: 20px; }
-      .modal-head { padding: 1.5rem 1.4rem 1.3rem; border-radius: 20px 20px 0 0; }
-      .modal-body { padding: 1.4rem 1.4rem 1.6rem; }
-      .form-row.two-col { grid-template-columns: 1fr; }
-      .child-fields { grid-template-columns: 1fr 1fr; }
-      .child-fields .form-group:first-child { grid-column: 1 / -1; }
+    /* Submit + success */
+    .modal-submit {
+      width: 100%; height: 54px; border: none; cursor: pointer;
+      background: var(--yellow); color: var(--blue-dark);
+      font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.08rem;
+      border-radius: 14px; box-shadow: 0 6px 20px rgba(255,194,51,0.4);
+      transition: transform 0.15s, box-shadow 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      margin-top: 1.3rem;
+    }
+    .modal-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255,194,51,0.5); }
+    .modal-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .modal-note { font-size: 0.74rem; color: var(--gray-lt); text-align: center; margin-top: 0.75rem; line-height: 1.5; }
+    .modal-success {
+      display: none; flex-direction: column; align-items: center;
+      padding: 2.5rem 1.5rem 3rem; text-align: center; gap: 0.9rem;
+    }
+    .modal-success.show { display: flex; }
+    .success-icon {
+      width: 70px; height: 70px; border-radius: 50%;
+      background: var(--green); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 1.9rem;
+    }
+    .modal-success h3 { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.45rem; color: var(--dark); }
+    .modal-success p { font-size: 0.92rem; color: var(--gray); max-width: 300px; line-height: 1.65; }
+    .modal-success .done-btn {
+      margin-top: 0.4rem; padding: 0.9rem 2.2rem;
+      background: var(--blue); color: #fff; border: none; cursor: pointer;
+      border-radius: 999px; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem;
     }
 
     /* ── RESPONSIVE ── */
@@ -747,6 +816,9 @@
 
       .cta-band h2 { font-size: clamp(1.7rem, 7vw, 2.2rem); }
       .cta-actions .btn { width: 100%; justify-content: center; }
+      .call-wrap { width: 100%; }
+      .call-wrap .btn { width: 100%; }
+      .call-popover { left: 0; right: 0; transform: none; min-width: unset; }
 
       .footer-locations { padding: 3rem 5% 0; }
       .footer-bottom { justify-content: center; text-align: center; }
@@ -885,7 +957,24 @@
     <p>Next batch starts <strong>June 8, 2026</strong> · <strong>$259</strong> for the full program. Seats fill quickly — pick a Surrey location below and book your child's spot today.</p>
     <div class="cta-actions">
       <a href="#locations" class="btn btn-primary">Register at a Location ↓</a>
-      <a href="tel:7786284516" class="btn btn-ghost">📞 Call to enroll</a>
+      <div class="call-wrap">
+        <button class="btn btn-ghost" id="callBtn">📞 Call to enroll</button>
+        <div class="call-popover" id="callPopover">
+          <div class="call-popover-title">Choose a location</div>
+          <a href="tel:7786284516" class="call-option">
+            <span class="call-loc">Fleetwood</span>
+            <span class="call-num">(778) 628-4516</span>
+          </a>
+          <a href="tel:7786744516" class="call-option">
+            <span class="call-loc">Clayton</span>
+            <span class="call-num">(778) 674-4516</span>
+          </a>
+          <a href="tel:7788771781" class="call-option">
+            <span class="call-loc">City Centre</span>
+            <span class="call-num">(778) 877-1781</span>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1002,6 +1091,7 @@
 <div class="modal-overlay" id="leadModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal-box">
     <div class="modal-head">
+      <div class="modal-drag-bar"></div>
       <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
       <div class="modal-badge" id="modalBadge">Public Speaking · 8-Week Course</div>
       <h3 id="modalTitle">Reserve your child's spot</h3>
@@ -1023,7 +1113,7 @@
             <span class="err-msg">Please enter a phone number.</span>
           </div>
         </div>
-        <div class="form-row" style="margin-bottom:1.2rem">
+        <div class="form-row">
           <div class="form-group" id="fg-email">
             <label for="f-email">Email Address</label>
             <input type="email" id="f-email" placeholder="you@example.com" autocomplete="email" />
@@ -1031,13 +1121,16 @@
           </div>
         </div>
 
+        <div class="form-divider"></div>
         <div class="children-header">
           <div class="form-section-label" style="margin-bottom:0">Child(ren)</div>
           <button type="button" class="add-child-btn" id="addChildBtn">+ Add Child</button>
         </div>
         <div id="childrenContainer"></div>
 
-        <div class="form-row" style="margin-top:0.4rem">
+        <div class="form-divider"></div>
+        <div class="form-section-label">Location</div>
+        <div class="form-row">
           <div class="form-group" id="fg-location">
             <label for="f-location">Preferred Location</label>
             <select id="f-location">
@@ -1091,6 +1184,23 @@
       }
     });
   })();
+</script>
+
+<script>
+(function () {
+  var btn      = document.getElementById('callBtn');
+  var popover  = document.getElementById('callPopover');
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    popover.classList.toggle('open');
+  });
+  document.addEventListener('click', function () {
+    popover.classList.remove('open');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') popover.classList.remove('open');
+  });
+})();
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
