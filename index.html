@@ -53,7 +53,7 @@
       background: var(--white);
       border-bottom: 3px solid var(--blue);
       position: sticky; top: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: flex-end;
       padding: 0 5%; height: 76px;
       box-shadow: 0 4px 18px rgba(15,59,125,0.08);
     }
@@ -843,9 +843,6 @@
 
 <!-- ── NAV ── -->
 <nav>
-  <a href="#" class="logo" aria-label="Best Brains Learning Center">
-    <img src="bestbrains-logo.png" alt="Best Brains Learning Center" class="logo-img" />
-  </a>
   <button class="mobile-toggle" aria-label="Toggle menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">
     <span></span><span></span><span></span>
   </button>
