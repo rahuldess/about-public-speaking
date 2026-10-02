@@ -1186,6 +1186,36 @@
         var embedUrl = url.replace(/\/?$/, '/').replace(/\/embed\/?$/, '/') + 'embed';
         el.innerHTML =
           '<iframe src="' + embedUrl + '" scrolling="no" allowtransparency="true" frameborder="0" loading="lazy" allow="encrypted-media; autoplay; clipboard-write; picture-in-picture; web-share" allowfullscreen></iframe>';
+
+        var iframe = el.querySelector('iframe');
+        var viewed = false, interacted = false, viewTimer;
+
+        // Impression: fires once the reel has been ≥50% on-screen for 1s.
+        if ('IntersectionObserver' in window) {
+          var obs = new IntersectionObserver(function (entries) {
+            if (entries[0].isIntersecting) {
+              viewTimer = setTimeout(function () {
+                if (!viewed) {
+                  viewed = true;
+                  (window.track || function () {})('Instagram Reel Viewed', { location: loc, url: url });
+                }
+              }, 1000);
+            } else {
+              clearTimeout(viewTimer);
+            }
+          }, { threshold: 0.5 });
+          obs.observe(el);
+        }
+
+        // Interaction: Instagram's embed is a cross-origin iframe with no
+        // play/pause API, so a tap inside it can only be inferred — focus
+        // moves into the iframe (and the window blurs) when the user taps it.
+        window.addEventListener('blur', function () {
+          if (!interacted && document.activeElement === iframe) {
+            interacted = true;
+            (window.track || function () {})('Instagram Reel Interacted', { location: loc, url: url });
+          }
+        });
       } else {
         el.innerHTML =
           '<div class="ig-placeholder">' +
@@ -1204,6 +1234,12 @@
 window.track = function (name, data) {
   try {
     if (window.va) window.va('event', data ? { name: name, data: data } : { name: name });
+  } catch (e) {}
+  try {
+    if (window.gtag) {
+      var gaName = name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 40);
+      window.gtag('event', gaName, data || {});
+    }
   } catch (e) {}
 };
 </script>
@@ -1309,6 +1345,22 @@ window.track = function (name, data) {
       var plat = el.classList.contains('soc-fb') ? 'Facebook'
                : el.classList.contains('soc-ig') ? 'Instagram' : 'Map';
       window.track('Social Link Clicked', { location: loc, platform: plat });
+    });
+  });
+
+  // Footer phone + email links
+  document.querySelectorAll('.loc-card .loc-row a[href^="tel:"]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var card = el.closest('.loc-card');
+      var loc  = card ? card.querySelector('.loc-name').textContent.replace('📍', '').trim() : 'unknown';
+      window.track('Phone Number Clicked', { location: loc, source: 'footer' });
+    });
+  });
+  document.querySelectorAll('.loc-card .loc-row a[href^="mailto:"]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var card = el.closest('.loc-card');
+      var loc  = card ? card.querySelector('.loc-name').textContent.replace('📍', '').trim() : 'unknown';
+      window.track('Email Clicked', { location: loc });
     });
   });
 
